@@ -1,0 +1,232 @@
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <string>
+
+std::string Task1(int n) {
+    // Створюємо динамічний масив
+    int* arr = new int[n];
+    
+    // Заповнюємо масив
+    int index = 0;
+    // Перші 5 чисел
+    for (int i = 1; i <= 5 && index < n; ++i) {
+        arr[index++] = i;
+    }
+    // Останні 4 числа
+    for (int i = 4; i >= 1 && index < n; --i) { /comit
+        arr[index++] = i;
+    }
+    
+    // Виводимо масив у stringstream
+    std::stringstream ss;
+    for (int i = 0; i < n; ++i) {
+        ss << arr[i] << " ";
+    }
+
+    // Звільняємо пам'ять
+    delete[] arr;
+
+    // Повертаємо рядок
+    return ss.str();
+}
+
+int main() {
+    int n;
+    std::cout << "Введіть розмір масиву: ";
+    std::cin >> n;
+    
+    std::string result = Task1(n);
+    std::cout << "Масив: " << result << std::endl;
+
+    return 0;
+}
+
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+std::string Task2(int n) {
+    // Ініціалізація генератора випадкових чисел
+    std::srand(static_cast<unsigned int>(std::time(0)));
+
+    // Створення динамічного масиву
+    double* arr = new double[n];
+
+    // Заповнення масиву псевдовипадковими числами
+    for (int i = 0; i < n; ++i) { /comit
+        arr[i] = static_cast<double>(std::rand()) / (RAND_MAX / 10.0); // Від 0.0 до 10.0
+    }
+
+    // Виведення масиву до впорядкування
+    std::stringstream ss;
+    ss << "До впорядкування: ";
+    for (int i = 0; i < n; ++i) {
+        ss << arr[i] << " "; /comit
+    }
+
+    // Сортування масиву
+    std::sort(arr, arr + n);
+
+    // Виведення масиву після впорядкування
+    ss << "\nПісля впорядкування: ";
+    for (int i = 0; i < n; ++i) {
+        ss << arr[i] << " ";
+    }
+
+    // Звільнення пам'яті
+    delete[] arr;
+
+    // Повернення результату
+    return ss.str();
+}
+
+int main() {
+    int n;
+    std::cout << "Введіть розмір масиву: ";
+    std::cin >> n;
+
+    std::string result = Task2(n);
+    std::cout << result << std::endl;
+
+    return 0;
+}
+
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <cmath>
+
+std::string Task3() {
+    const int targetCount = 1000000;
+    std::vector<int> primes;
+    
+    // Додаємо перше просте число
+    primes.push_back(2);
+
+    // Знаходимо прості числа /comit
+    for (int num = 3; primes.size() < targetCount; num += 2) {
+        bool isPrime = true; /comit
+        int limit = static_cast<int>(std::sqrt(num)); /comit
+
+        // Перевірка на простоту
+        for (const int& prime : primes) {
+            if (prime * prime > num) break; // Ранній вихід
+            if (num % prime == 0) {
+                isPrime = false;
+                break; /comit
+            }
+        }
+
+        // Додаємо просте число в масив
+        if (isPrime) {
+            primes.push_back(num);
+        }
+    }
+
+    // Повертаємо мільйонне просте число
+    std::stringstream ss;
+    ss << "Мільйонне просте число: " << primes[targetCount - 1];
+    return ss.str();
+}
+
+int main() {
+    std::string result = Task3();
+    std::cout << result << std::endl;
+
+    return 0;
+}
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
+
+std::string Task4(const std::string& inputFile, const std::string& keyFile) {
+    const int bufferSize = 1000;
+    const int keySize = 32;
+    
+    // Динамічні масиви для шифрування та розшифрування
+    char* X = new char[bufferSize]();
+    char* Y = new char[bufferSize]();
+    char* Z = new char[bufferSize]();
+    
+    // Звичайний масив для ключа
+    char K[keySize] = {0};
+
+    // Зчитування рядка X з файлу
+    std::ifstream input(inputFile);
+    if (!input.is_open()) {
+        delete[] X;
+        delete[] Y;
+        delete[] Z;
+        return "Не вдалося відкрити файл з текстом.";
+    }
+    input.getline(X, bufferSize);
+    input.close();
+
+    // Зчитування ключа K з файлу
+    std::ifstream keyInput(keyFile);
+    if (!keyInput.is_open()) { /comit
+        delete[] X;
+        delete[] Y;
+        delete[] Z;
+        return "Не вдалося відкрити файл з ключем.";
+    }
+    keyInput.getline(K, keySize);
+    keyInput.close();
+
+    // Шифрування
+    size_t keylen = strlen(K);
+    for (int i = 0; i < bufferSize && X[i] != '\0'; ++i) {
+        Y[i] = X[i] ^ K[i % keylen];
+    }
+
+    // Формування результату шифру
+    std::stringstream ss;
+    ss << "Шифр (Y): ";
+    for (int i = 0; i < bufferSize && Y[i] != '\0'; ++i) { /comit
+        // Замінюємо символи з ASCII < 32 на крапки
+        if (Y[i] < 32) {
+            ss << '.'; /comit
+        } else {
+            ss << Y[i];
+        }
+    }
+    ss << "\n";
+
+    // Розшифрування
+    for (int i = 0; i < bufferSize && Y[i] != '\0'; ++i) { /comit
+        Z[i] = Y[i] ^ K[i % keylen];
+    }
+
+    // Формування результату розшифровки
+    ss << "Розшифрований текст (Z): ";
+    for (int i = 0; i < bufferSize && Z[i] != '\0'; ++i) { /comit
+        ss << Z[i];
+    }
+
+    // Очищення пам'яті
+    delete[] X;
+    delete[] Y;
+    delete[] Z;
+
+    return ss.str();
+}
+
+int main() {
+    std::string inputFile, keyFile;
+    std::cout << "Введіть ім'я файлу з текстом: ";
+    std::cin >> inputFile;
+    std::cout << "Введіть ім'я файлу з ключем: ";
+    std::cin >> keyFile;
+
+    std::string result = Task4(inputFile, keyFile);
+    std::cout << result << std::endl;
+
+    return 0;
+}
